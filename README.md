@@ -1,6 +1,6 @@
 # React Ready Tools
 
-[![npm version](https://img.shields.io/npm/v/react-ready-tools)](https://www.npmjs.com/package/react-ready-tools)
+[![npm version](https://img.shields.io/npm/v/react-when-ready)](https://www.npmjs.com/package/react-when-ready)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 > **Tools for React content readiness orchestration**  
