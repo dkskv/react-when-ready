@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { useCallback, useState } from "react";
 import { useDelayedLoading } from "./use-delayed-loading";
 import { ReadinessPendingProvider } from "./readiness-pending-provider";
@@ -16,6 +16,13 @@ export interface SwitchWhenReadyProps<Key extends string> {
     content: React.ReactNode;
     isShowLoading: boolean;
   }) => React.ReactNode;
+  /**
+   * Function that returns CSS styles for content wrappers based on visibility state
+   * @param shouldHide - Indicates whether the wrapped content should be hidden
+   * @returns CSSProperties object with styles to apply to the wrapper
+   * @default (shouldHide) => ({ display: shouldHide ? "none" : "contents" })
+   */
+  getContentWrapperStyle?: (shouldHide: boolean) => CSSProperties;
 }
 
 /**
@@ -27,6 +34,9 @@ export const SwitchWhenReady = <Key extends string>({
   renderByKey,
   loaderDelay = 0,
   renderWithLoading = ({ content }) => content,
+  getContentWrapperStyle = (shouldHide) => ({
+    display: shouldHide ? "none" : "contents",
+  }),
 }: SwitchWhenReadyProps<Key>) => {
   const [lastReadyKey, setLastReadyKey] = useState<Key>();
 
@@ -45,21 +55,22 @@ export const SwitchWhenReady = <Key extends string>({
   const hasActive = activeKey !== undefined;
 
   const isActiveLoading = hasPlaceholder || lastReadyKey === undefined;
-  // todo: hide loader when loading parent
   const isShowLoading = useDelayedLoading(isActiveLoading, loaderDelay);
 
   const content = (
     <>
       {hasActive && (
         <ReadinessPendingProvider key={activeKey} onReady={handleActiveReady}>
-          <div style={{ display: isActiveLoading ? "none" : undefined }}>
+          <div style={getContentWrapperStyle(isActiveLoading)}>
             {renderByKey(activeKey)}
           </div>
         </ReadinessPendingProvider>
       )}
       {hasPlaceholder && (
         <ReadinessPendingProvider key={placeholderKey}>
-          <div>{renderByKey(placeholderKey)}</div>
+          <div style={getContentWrapperStyle(false)}>
+            {renderByKey(placeholderKey)}
+          </div>
         </ReadinessPendingProvider>
       )}
     </>
